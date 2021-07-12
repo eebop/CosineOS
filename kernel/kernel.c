@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <libc/definitions.h>
 #include <cpu/timer.h>
+#include <command-line/main.h>
 
 uint32_t tick;
 
