@@ -7,7 +7,6 @@ uint32_t tick = 0;
 uint32_t divisor = 0;
 
 static void timer_callback(registers_t *regs) {
-  every_tick(tick);
   tick++;
 }
 
