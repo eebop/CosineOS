@@ -78,7 +78,7 @@ void kmsetup(void) {
  *      user data */
 
 /* TODO: Add a lock because malloc() is not threadsafe (yet) */
-void *kmalloc(size_t size) {
+void *malloc(size_t size) {
   uint8_t *ptr = MALLOCSTART;
   /*round size up to the nearest multiple of four*/
   size = (size & ~3) + (4 & (size<<1 | size<<2)) + allsize;
@@ -101,7 +101,7 @@ void *kmalloc(size_t size) {
 }
 
 
-void *krealloc(void *ptr, size_t size) {
+void *realloc(void *ptr, size_t size) {
   void *new;
   if (size < *getsize(ptr)) {
     new = kmalloc(size);
@@ -113,7 +113,7 @@ void *krealloc(void *ptr, size_t size) {
   }
 }
 
-void kfree(void *ptr) {
+void free(void *ptr) {
   /* gettype is a macro */
   *((uint8_t *)ptr - typesize) = 0x00;
 }
