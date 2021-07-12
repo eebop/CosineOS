@@ -104,9 +104,9 @@ void *malloc(size_t size) {
 void *realloc(void *ptr, size_t size) {
   void *new;
   if (size < *getsize(ptr)) {
-    new = kmalloc(size);
+    new = malloc(size);
     memcpy(new, ptr, size);
-    kfree(ptr);
+    free(ptr);
     return new;
   } else {
     return ptr; /* not worth it */
@@ -122,7 +122,7 @@ void free(void *ptr) {
 /*
  * Implementation is just a pointer to some free memory which
  * keeps growing *
-uint32_t kmalloc_mop(size_t size, int align, uint32_t *phys_addr) {
+uint32_t malloc_mop(size_t size, int align, uint32_t *phys_addr) {
   * Pages are aligned to 4K, or 0x1000 *
   char str[32];
   uint32_t ret;
