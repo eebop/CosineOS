@@ -23,26 +23,30 @@ int get_offset_col(int offset);
  */
 
 int printf(const char *format, ...) {
-  // va_list argp;
-  // va_start(argp, format);
+  va_list argp;
+  char var[32];
+  va_start(argp, format);
   while (*format) {
-    // if (*format == '%') {
-    //   format++;
-    //   if (*format == '%') {
-    //     kprint_char('%');
-    //   } else if (*format == 'c') {
-    //     kprint_char(va_arg(argp, int));
-    //   } else if (*format == 's') {
-    //     kprint((char *) va_arg(argp, uintptr_t));
-    //   } else if (*format == 'd') {
-    //     kprinti(va_arg(argp, int));
-    //   }
-    // } else {
+    if (*format == '%') {
+      format++;
+      if (*format == '%') {
+        kprint_char('%');
+      } else if (*format == 'c') {
+        kprint_char(va_arg(argp, int));
+      } else if (*format == 's') {
+        kprint((char *) va_arg(argp, uintptr_t));
+      } else if (*format == 'd') {
+        int_to_ascii(va_arg(argp, int), var);
+        kprint(var);
+      } else {
+        printf("<Unknown format specifier '%c'>", *format);
+      }
+    } else {
       kprint_char(*format);
-    // }
+    }
     format++;
   }
-  // va_end(argp);
+  va_end(argp);
   return 0;
 }
 
@@ -69,8 +73,13 @@ void kprint_at(char *message, int col, int row) {
 }
 
 void kprint(char *message) {
-  kreset();
   kprint_at(message, -1, -1);
+}
+
+void kprint_char(char c) {
+  char *str = "E";
+  str[0] = c;
+  kprint(str);
 }
 
 void kprinti(int value) {
@@ -80,10 +89,6 @@ void kprinti(int value) {
   kprint("\n");
 }
 
-void kprint_dont_reset(char *message) {
-  kprint_at(message, -1, -1);
-}
-
 void kprint_backspace(void) {
   int offset = get_cursor_offset()-2;
   int row = get_offset_row(offset);
@@ -91,7 +96,7 @@ void kprint_backspace(void) {
   print_char(0x08, col, row, WHITE_ON_BLACK);
 }
 
-void kprint_char(char c) {
+void _kprint_char(char c) {
   int offset = get_cursor_offset()-2;
   int row = get_offset_row(offset);
   int col = get_offset_col(offset);
@@ -132,6 +137,7 @@ int print_char(char c, int col, int row, char attr) {
     row = get_offset_row(offset);
     offset = get_offset(0, row+1);
   } else if (c == '\b') { /* Backspace */
+    offset-=2;
     vidmem[offset] = ' ';
     vidmem[offset+1] = attr;
   } else {

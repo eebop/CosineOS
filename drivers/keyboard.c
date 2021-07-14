@@ -7,12 +7,10 @@
 #include <stdint.h>
 #include <libc/definitions.h>
 
-#define BACKSPACE 0x0E
-#define ENTER 0x1C
 
-static int keys[256];
-static int index;
-static int num_typed;
+
+char data[256];
+int num;
 
 #define SC_MAX 256
 /* TODO: figure out what characters the ?s corrispond to */
@@ -31,67 +29,27 @@ static const char uppercase[] = { '?', '?', '!', '@', '#', '$', '%', '^','&', '*
 static void keypress(registers_t *regs) {
   /* The PIC leaves us the scancode in port 0x60 */
   uint8_t scancode = port_byte_in(0x60);
-  keys[scancode & 0x7F] = !(scancode & 0x80);
-}
-
-
-static void nextchar(void) {
-  int tmp = index;
-  do {
-    index++;
-    index %= 256;
-    if (tmp==index) {
-      return;
-    }
-  } while (keys[index]==0);
-}
-
-static int _getchar(void) {
-  nextchar();
-  if (keys[index] == 0) {
-    return -1;
+  if ((scancode & 0x80) == 0) {
+    //kprinti(uppercase[scancode]);
+    data[num++] = uppercase[scancode];
   }
-  if (index == BACKSPACE) {
-    nextchar();
-    if (index == BACKSPACE && num_typed != 0) {
-      kprint_backspace();
-      num_typed--;
-    }
-    nextchar();
-    if (index == BACKSPACE) {
-      nextchar();
-      return -1;
-    }
-  }
-
-  return index;
 }
 
 int getchar(void) {
   char str[2];
-  int value = _getchar();
-  char ans;
-  if (value == -1) {
+  if (num == 0) {
     return -1;
   }
-  num_typed++;
-  ans = uppercase[value];
-  str[0] = ans;
+  str[0] = data[num-1];
   str[1] = '\0';
-  kprint_dont_reset(str);
-  return ans;
-}
-
-void kreset(void) {
-  num_typed = 0;
+  //kprinti(str[0]);
+  kprint(str);
+  //kprinti(str[0]=='\b');
+  return data[--num];
 }
 
 void init_keyboard(void) {
-  int i;
-  index = 0;
-  num_typed = 0;
-  for(i=0;i!=256;i++) {
-    keys[i] = 0;
-  }
   register_interrupt_handler(IRQ1, keypress);
+  num = 0;
+  data[255] = 0;
 }
