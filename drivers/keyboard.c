@@ -7,10 +7,11 @@
 #include <stdint.h>
 #include <libc/definitions.h>
 
-
+#define SHIFT 42
 
 char data[256];
 int num;
+int is_upper;
 
 #define SC_MAX 256
 /* TODO: figure out what characters the ?s corrispond to */
@@ -29,27 +30,31 @@ static const char uppercase[] = { '?', '?', '!', '@', '#', '$', '%', '^','&', '*
 static void keypress(registers_t *regs) {
   /* The PIC leaves us the scancode in port 0x60 */
   uint8_t scancode = port_byte_in(0x60);
-  if ((scancode & 0x80) == 0) {
-    //kprinti(uppercase[scancode]);
-    data[num++] = uppercase[scancode];
+  if ((scancode & 0x7F) == SHIFT) {
+    is_upper = !(scancode & 0x80);
+  } else {
+    if ((scancode & 0x80) == 0) {
+      if (is_upper) {
+        data[num++] = uppercase[scancode];
+      } else {
+        data[num++] = lowercase[scancode];
+      }
+    }
+
   }
 }
 
 int getchar(void) {
-  char str[2];
   if (num == 0) {
     return -1;
   }
-  str[0] = data[num-1];
-  str[1] = '\0';
-  //kprinti(str[0]);
-  kprint(str);
-  //kprinti(str[0]=='\b');
-  return data[--num];
+  kprint_char(data[--num]);
+  return data[num];
 }
 
 void init_keyboard(void) {
   register_interrupt_handler(IRQ1, keypress);
   num = 0;
   data[255] = 0;
+  is_upper = 0;
 }

@@ -46,9 +46,7 @@ void system(Data *string) {
 
 void update(void) {
   int in = getchar();
-  //kprinti(in);
   if (in == (int)'\b') {
-    //kprint("here");
     popchar(input);
   } else {
     if (in != -1) {
