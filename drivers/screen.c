@@ -25,6 +25,7 @@ int get_offset_col(int offset);
 int printf(const char *format, ...) {
   va_list argp;
   char var[32];
+  char *str;
   va_start(argp, format);
   while (*format) {
     if (*format == '%') {
@@ -34,7 +35,12 @@ int printf(const char *format, ...) {
       } else if (*format == 'c') {
         kprint_char(va_arg(argp, int));
       } else if (*format == 's') {
-        kprint((char *) va_arg(argp, uintptr_t));
+        str = (char *) va_arg(argp, uintptr_t);
+        if (str == NULL) {
+          kprint("<null>");
+        } else {
+          kprint(str);
+        }
       } else if (*format == 'd') {
         int_to_ascii(va_arg(argp, int), var);
         kprint(var);

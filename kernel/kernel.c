@@ -30,7 +30,6 @@ void run(void) {
   uint32_t old_tick = tick;
   while (1) {
     if (tick - old_tick > 3) {
-      //printf("hello world%c%%%d%e\n", '!', 32);
       update();
       old_tick = tick;
     }

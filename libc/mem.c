@@ -50,7 +50,7 @@ int memcmp(uint8_t *first, uint8_t *last, size_t nbytes) {
 /* This should be computed at link time, but a hardcoded
  * value is fine for now. Remember that our kernel starts
  * at 0x1000 as defined on the Makefile */
-#define MALLOCSTART (uint8_t *) 0x800000
+#define MALLOCSTART (uint8_t *) 0x1000000
 
 
 void kmsetup(void) {

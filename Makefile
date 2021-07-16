@@ -51,4 +51,4 @@ all: clean cosine.bin run
 
 clean:
 	rm -rf *.bin *.dis *.o *.elf
-	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o cpu/*.o libc/*.o
+	rm -rf kernel/*.o boot/*.bin drivers/*.o boot/*.o cpu/*.o libc/*.o command-line/*.o
